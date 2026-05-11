@@ -7,12 +7,13 @@
 #include "ggml-opt.h"
 #include "ggml.h"
 
+#include <algorithm>
+#include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <map>
 
 #if defined(_WIN32) && !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0A00
