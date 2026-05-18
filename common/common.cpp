@@ -1502,9 +1502,41 @@ struct llama_context_params common_context_params_to_llama(const common_params &
     cparams.n_ctx             = params.n_ctx;
     cparams.n_seq_max         = params.n_parallel;
     {
-        const bool has_spec = (params.speculative.types.size() > 1 || params.speculative.types[0] != COMMON_SPECULATIVE_TYPE_NONE)
-                              || params.speculative.has_dft();
-        cparams.n_rs_seq = has_spec ? (uint32_t) params.speculative.draft.n_max : 0u;
+        uint32_t n_rs_seq = 0;
+
+        if (params.speculative.has_dft()) {
+            n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.draft.n_max);
+        }
+
+        for (const auto type : params.speculative.types) {
+            switch (type) {
+                case COMMON_SPECULATIVE_TYPE_DRAFT:
+                case COMMON_SPECULATIVE_TYPE_EAGLE3:
+                case COMMON_SPECULATIVE_TYPE_MTP:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.draft.n_max);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NGRAM_SIMPLE:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.ngram_simple.size_m);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.ngram_map_k.size_m);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K4V:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.ngram_map_k4v.size_m);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NGRAM_MOD:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.ngram_mod.n_max);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NGRAM_CACHE:
+                    n_rs_seq = std::max(n_rs_seq, (uint32_t) params.speculative.draft.n_max);
+                    break;
+                case COMMON_SPECULATIVE_TYPE_NONE:
+                case COMMON_SPECULATIVE_TYPE_COUNT:
+                    break;
+            }
+        }
+
+        cparams.n_rs_seq = n_rs_seq;
     }
     cparams.n_batch           = params.n_batch;
     cparams.n_ubatch          = params.n_ubatch;

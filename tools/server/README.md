@@ -1369,6 +1369,10 @@ curl http://localhost:8080/v1/responses \
 
 This endpoint works by converting Responses request into Chat Completions request.
 
+Note: only Responses `function` tools are translated to Chat Completions tools. Built-in
+Responses tools such as `web_search`, `file_search`, and `image_generation` are ignored
+by this compatibility conversion because llama-server does not execute hosted OpenAI tools.
+
 
 ### POST `/v1/embeddings`: OpenAI-compatible embeddings API
 

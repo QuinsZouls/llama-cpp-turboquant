@@ -3880,7 +3880,9 @@ static void ggml_vk_load_shaders(vk_device & device) {
             CREATE_FA(GGML_TYPE_Q5_1, q5_1, FA_SCALAR, )
             CREATE_FA(GGML_TYPE_IQ4_NL, iq4_nl, FA_SCALAR, )
         }
+        CREATE_FA(GGML_TYPE_TURBO2_0, turbo2_0, FA_SCALAR, )
         CREATE_FA(GGML_TYPE_TURBO3_0, turbo3_0, FA_SCALAR, )
+        CREATE_FA(GGML_TYPE_TURBO4_0, turbo4_0, FA_SCALAR, )
     } else {
         CREATE_FA(GGML_TYPE_F32, f32, FA_SCALAR, )
         CREATE_FA(GGML_TYPE_F16, f16, FA_SCALAR, )
@@ -3903,7 +3905,9 @@ static void ggml_vk_load_shaders(vk_device & device) {
             CREATE_FA(GGML_TYPE_Q5_1, q5_1, FA_SCALAR, )
             CREATE_FA(GGML_TYPE_IQ4_NL, iq4_nl, FA_SCALAR, )
         }
+        CREATE_FA(GGML_TYPE_TURBO2_0, turbo2_0, FA_SCALAR, )
         CREATE_FA(GGML_TYPE_TURBO3_0, turbo3_0, FA_SCALAR, )
+        CREATE_FA(GGML_TYPE_TURBO4_0, turbo4_0, FA_SCALAR, )
     }
 #if defined(VK_KHR_cooperative_matrix) && defined(GGML_VULKAN_COOPMAT_GLSLC_SUPPORT)
     if (device->coopmat1_fa_support) {
@@ -3915,7 +3919,9 @@ static void ggml_vk_load_shaders(vk_device & device) {
         CREATE_FA(GGML_TYPE_Q5_0, q5_0, FA_COOPMAT1, _cm1)
         CREATE_FA(GGML_TYPE_Q5_1, q5_1, FA_COOPMAT1, _cm1)
         CREATE_FA(GGML_TYPE_IQ4_NL, iq4_nl, FA_COOPMAT1, _cm1)
+        CREATE_FA(GGML_TYPE_TURBO2_0, turbo2_0, FA_COOPMAT1, _cm1)
         CREATE_FA(GGML_TYPE_TURBO3_0, turbo3_0, FA_COOPMAT1, _cm1)
+        CREATE_FA(GGML_TYPE_TURBO4_0, turbo4_0, FA_COOPMAT1, _cm1)
     }
 #endif
 #if defined(VK_NV_cooperative_matrix2) && defined(GGML_VULKAN_COOPMAT2_GLSLC_SUPPORT)
@@ -18582,7 +18588,9 @@ static bool ggml_backend_vk_device_supports_op(ggml_backend_dev_t dev, const ggm
                         case GGML_TYPE_Q5_0:
                         case GGML_TYPE_Q4_1:
                         case GGML_TYPE_Q4_0:
+                        case GGML_TYPE_TURBO2_0:
                         case GGML_TYPE_TURBO3_0:
+                        case GGML_TYPE_TURBO4_0:
                             return true;
                         case GGML_TYPE_Q1_0:
                             return coopmat2;

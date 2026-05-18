@@ -630,6 +630,9 @@ void process_shaders() {
         }
     }
 
+    std::vector<std::string> fa_type_names = type_names;
+    fa_type_names.insert(fa_type_names.end(), {"turbo2_0", "turbo4_0"});
+
     for (const bool& fp16 : {false, true}) {
         std::map<std::string, std::string> base_dict;
         if (fp16) {
@@ -655,7 +658,7 @@ void process_shaders() {
 #endif
 
 
-            for (const auto& tname : type_names) {
+            for (const auto& tname : fa_type_names) {
                 if (tname == "bf16") continue;
                 // TQ4_1S is a weight-only format; flash attention isn't defined for it.
                 if (tname == "tq4_1s") continue;
@@ -665,7 +668,7 @@ void process_shaders() {
                 if (tname == "f16") {
                     string_to_spv("flash_attn_f32_f16_" + tname, "flash_attn_cm1.comp",
                         merge_maps(fa_base_dict, {{"Q_TYPE", "float"}, {"D_TYPE", "float"}, {"D_TYPEV4", "vec4"}, {"COOPMAT", "1"}}), fp16, true, false, f16acc);
-                } else if (tname == "q4_0" || tname == "q4_1" || tname == "q5_0" || tname == "q5_1" || tname == "iq4_nl" || tname == "q8_0" || tname == "f32" || tname == "turbo3_0") {
+                } else if (tname == "q4_0" || tname == "q4_1" || tname == "q5_0" || tname == "q5_1" || tname == "iq4_nl" || tname == "q8_0" || tname == "f32" || tname == "turbo2_0" || tname == "turbo3_0" || tname == "turbo4_0") {
                     std::string data_a_key = "DATA_A_" + to_uppercase(tname);
                     string_to_spv("flash_attn_f32_f16_" + tname, "flash_attn_cm1.comp",
                         merge_maps(fa_base_dict, {{data_a_key, "1"}, {"Q_TYPE", "float"}, {"D_TYPE", "float"}, {"D_TYPEV4", "vec4"}, {"BLOCK_SIZE", "QUANT_K_"+to_uppercase(tname)}, {"COOPMAT", "1"}}), fp16, true, false, f16acc);
@@ -676,13 +679,13 @@ void process_shaders() {
                 if (tname == "f16") {
                     string_to_spv("flash_attn_f32_f16_" + tname, "flash_attn.comp",
                         merge_maps(fa_base_dict, {{"Q_TYPE", "float"}, {"D_TYPE", "float"}, {"D_TYPEV4", "vec4"}}), fp16, false, false, f16acc);
-                } else if (tname == "q4_0" || tname == "q4_1" || tname == "q5_0" || tname == "q5_1" || tname == "iq4_nl" || tname == "q8_0" || tname == "f32" || tname == "turbo3_0") {
+                } else if (tname == "q4_0" || tname == "q4_1" || tname == "q5_0" || tname == "q5_1" || tname == "iq4_nl" || tname == "q8_0" || tname == "f32" || tname == "turbo2_0" || tname == "turbo3_0" || tname == "turbo4_0") {
                     std::string data_a_key = "DATA_A_" + to_uppercase(tname);
                     string_to_spv("flash_attn_f32_f16_" + tname, "flash_attn.comp",
                         merge_maps(fa_base_dict, {{data_a_key, "1"}, {"Q_TYPE", "float"}, {"D_TYPE", "float"}, {"D_TYPEV4", "vec4"}, {"BLOCK_SIZE", "QUANT_K_"+to_uppercase(tname) }}), fp16, false, false, f16acc);
 #if defined(GGML_VULKAN_INTEGER_DOT_GLSLC_SUPPORT)
-                    // MMQ path has no turbo3_0 code path; skip.
-                    if (tname != "f32" && tname != "turbo3_0") {
+                    // MMQ path has no turbo code path; skip.
+                    if (tname != "f32" && tname != "turbo2_0" && tname != "turbo3_0" && tname != "turbo4_0") {
                         string_to_spv("flash_attn_f32_f16_" + tname, "flash_attn.comp",
                             merge_maps(fa_base_dict, {{data_a_key, "1"}, {"Q_TYPE", "float"}, {"D_TYPE", "float"}, {"D_TYPEV4", "vec4"}, {"BLOCK_SIZE", "QUANT_K_"+to_uppercase(tname) }, {"MMQ", "1"}}), fp16, false, false, f16acc, "_int8");
                     }

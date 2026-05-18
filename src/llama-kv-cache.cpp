@@ -86,7 +86,6 @@ static ggml_tensor * ggml_mul_mat_aux(
 #else
 #  define TURBO_IQ_IMPORT
 #endif
-extern TURBO_IQ_IMPORT bool  g_innerq_finalized;
 extern TURBO_IQ_IMPORT float g_innerq_scale_inv_host[INNERQ_MAX_CHANNELS];
 TURBO_IQ_IMPORT bool turbo_innerq_needs_tensor_update(void);
 TURBO_IQ_IMPORT void turbo_innerq_mark_tensor_updated(void);
